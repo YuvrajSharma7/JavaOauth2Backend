@@ -4,17 +4,14 @@ import java.net.URI;
 
 import javax.security.sasl.AuthenticationException;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.dto.request.GoogleLoginDto;
 import com.example.demo.dto.request.LoginRequestDTO;
@@ -27,7 +24,10 @@ import com.example.demo.service.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin
+@Slf4j
 public class AuthController {
+
 
 	@Autowired
 	AuthService authService;
@@ -59,6 +59,7 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequestDTO dto)
 			throws AuthenticationException, BadRequestException {
+		log.info("Login API executing");
 		LoginResponseDTO responeDto = null;
 		try {
 			responeDto = authService.login(dto);
@@ -72,12 +73,14 @@ public class AuthController {
 			throw e;
 
 		}
+		log.info("Login success!");
 		return ResponseEntity.ok(responeDto);
 	}
 
 	@GetMapping("/redirect/google-login")
 	public ResponseEntity<SocialMediaLoginResponse> redirectToGoogleLogin()
 			throws AuthenticationException, BadRequestException {
+		log.info("Google Oauth2 login API executing");
 		SocialMediaLoginResponse responsePayload = new SocialMediaLoginResponse();
 		StringBuilder googleOauthUrl = new StringBuilder();
 		googleOauthUrl.append(googleOauthBaseUrl).append("?redirect_uri=").append(googleOauthRedirectUrl)
@@ -85,13 +88,14 @@ public class AuthController {
 				.append(googleOauthClientId).append("&scope=").append(googleOauthScope).append("&access_type=")
 				.append(googleOauthAccesstype);
 		responsePayload.setUrl(googleOauthUrl.toString());
-
+		log.info("Google Oauth2 login success!");
 		return ResponseEntity.ok(responsePayload);
 	}
 
 	@PostMapping("/login/google")
 	public ResponseEntity<LoginResponseDTO> loginWithGoogle(@RequestBody GoogleLoginDto googleLoginDto)
 			throws AuthenticationException, BadRequestException {
+		log.info("Google login API executing");
 		LoginResponseDTO tokenDto = this.authService.loginWithGoogle(googleLoginDto);
 		return ResponseEntity.ok(tokenDto);
 	}

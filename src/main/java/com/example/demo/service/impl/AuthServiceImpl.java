@@ -62,10 +62,10 @@ public class AuthServiceImpl implements AuthService {
 	@Autowired
 	private JwtUtil jwtUtil;
 
-	@Value("${google.aouth.client.secret}")
+	@Value("${google.oauth.client.secret}")
 	private String googleOauthClientSecret;
 
-	@Value("${google.aouth.token.endpoint.base.url}")
+	@Value("${google.oauth.token.endpoint.base.url}")
 	private String googleOauthTokenEndpointBaseUrl;
 
 	@Value("${google.oauth.client.id}")
